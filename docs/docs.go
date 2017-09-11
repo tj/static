@@ -79,6 +79,10 @@ func Compile(c *Config) error {
 	for _, f := range files {
 		path := filepath.Join(c.Src, f.Name())
 
+		if !strings.HasSuffix(path, ".md") {
+			continue
+		}
+
 		log.Infof("compiling %q", path)
 		p, err := compile(c, path)
 		if err != nil {
@@ -107,6 +111,19 @@ func Compile(c *Config) error {
 
 	if c.Google != "" {
 		html = inject.Head(html, inject.GoogleAnalytics(c.Google))
+	}
+
+	fav := filepath.Join(c.Src, "favicon.ico")
+	if _, err := os.Stat(fav); !os.IsNotExist(err) {
+		log.Info("adding favicon")
+		bts, err := ioutil.ReadFile(fav)
+		if err != nil {
+			return errors.Wrap(err, "reading favicon.ico")
+		}
+		if err := ioutil.WriteFile(filepath.Join(c.Dst, "favicon.ico"), bts, 0644); err != nil {
+			return errors.Wrap(err, "copying favicon.ico")
+		}
+		html = inject.Head(html, inject.Favicon())
 	}
 
 	out := filepath.Join(c.Dst, "index.html")

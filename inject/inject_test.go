@@ -2,10 +2,8 @@ package inject_test
 
 import (
 	"fmt"
-	"testing"
 
-	"github.com/tj/assert"
-	"github.com/apex/up/internal/inject"
+	"github.com/apex/static/inject"
 )
 
 var html = `<!doctype html>
@@ -84,6 +82,23 @@ func ExampleBody() {
 	// </html>
 }
 
+func ExampleFavicon() {
+	s := inject.Head(html, inject.Favicon())
+	fmt.Printf("%s\n", s)
+	// Output:
+	// <!doctype html>
+	// <html>
+	//   <head>
+	//     <meta charset="utf-8">
+	//     <title>Example</title>
+	//     <link rel="icon" type="image/x-icon" href="favicon.ico">
+	//   </head>
+	//   <body>
+	//     <p>Hello World</p>
+	//   </body>
+	// </html>
+}
+
 func ExampleSegment() {
 	fmt.Printf("%s\n", inject.Segment(`KEY HERE`))
 	// Output:
@@ -117,57 +132,4 @@ func ExampleVar() {
 	fmt.Printf("%s\n", inject.Var("const", "user", user))
 	// Output:
 	// <script>const user = {"name":"Tobi"}</script>
-}
-
-func TestRule_Default(t *testing.T) {
-	r := inject.Rule{Value: `<script></script>`}
-	assert.NoError(t, r.Default(), "default")
-	assert.NoError(t, r.Validate(), "validate")
-	assert.Equal(t, "literal", r.Type)
-}
-
-func TestRule_Validate(t *testing.T) {
-	r := inject.Rule{Type: "whatever"}
-	assert.NoError(t, r.Default(), "default")
-	assert.EqualError(t, r.Validate(), `invalid .type: "whatever" is invalid, must be one of:
-
-  • literal
-  • comment
-  • style
-  • script
-  • inline style
-  • inline script
-  • google analytics
-  • segment`)
-}
-
-func TestRules_Default(t *testing.T) {
-	t.Run("type literal", func(t *testing.T) {
-		rules := inject.Rules{
-			"head": []*inject.Rule{
-				{
-					Value: `<script>var user = {}</script>`,
-				},
-			},
-		}
-
-		assert.NoError(t, rules.Default(), "default")
-		assert.NoError(t, rules.Validate(), "validate")
-	})
-}
-
-func TestRules_Validate(t *testing.T) {
-	t.Run("missing value", func(t *testing.T) {
-		rules := inject.Rules{
-			"head": []*inject.Rule{
-				{
-					Type: "inline script",
-					// Value: "var user = {}",
-				},
-			},
-		}
-
-		assert.NoError(t, rules.Default(), "default")
-		assert.EqualError(t, rules.Validate(), `head rule #1: .value is required`)
-	})
 }

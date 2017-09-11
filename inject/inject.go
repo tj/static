@@ -42,6 +42,11 @@ func Comment(s string) string {
 	return "<!-- " + html.EscapeString(s) + " -->"
 }
 
+// Favicon returns the favicon header
+func Favicon() string {
+	return `<link rel="icon" type="image/x-icon" href="favicon.ico">`
+}
+
 // Segment inline script with key.
 func Segment(key string) string {
 	return ScriptInline(`
