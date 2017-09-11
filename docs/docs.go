@@ -37,9 +37,6 @@ type Config struct {
 
 	// Segment write key.
 	Segment string
-
-	// Favicon path
-	Favicon string
 }
 
 // Page model.
