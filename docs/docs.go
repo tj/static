@@ -37,6 +37,9 @@ type Config struct {
 
 	// Segment write key.
 	Segment string
+
+	// Google Analytics tracking id.
+	Google string
 }
 
 // Page model.
@@ -106,6 +109,10 @@ func Compile(c *Config) error {
 		html = inject.Head(html, inject.Segment(c.Segment))
 	}
 
+  if c.Google != "" {
+		html = inject.Head(html, inject.GoogleAnalytics(c.Google))
+	}
+
 	fav := filepath.Join(c.Src, "favicon.ico")
 	if _, err := os.Stat(fav); !os.IsNotExist(err) {
 		log.Info("adding favicon")
@@ -117,7 +124,7 @@ func Compile(c *Config) error {
 			return errors.Wrap(err, "copying favicon.ico")
 		}
 		html = inject.Head(html, inject.Favicon())
-	}
+  }
 
 	out := filepath.Join(c.Dst, "index.html")
 	if err := ioutil.WriteFile(out, []byte(html), 0755); err != nil {
