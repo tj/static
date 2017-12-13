@@ -79,8 +79,8 @@ func HeadingAnchors(r io.Reader) io.ReadCloser {
 	return pr
 }
 
-// Code returns a reader with HTML code prettified with chroma
-func Code(r io.Reader) io.ReadCloser {
+// SyntaxHighlight returns a reader with HTML code prettified with chroma
+func SyntaxHighlight(r io.Reader) io.ReadCloser {
 	pr, pw := io.Pipe()
 	go func() {
 		doc, err := dom.NewDocumentFromReader(r)

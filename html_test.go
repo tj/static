@@ -54,7 +54,7 @@ func ExampleHeadingAnchors() {
 	// 	</body></html>
 }
 
-func TestCode(t *testing.T) {
+func TestSyntaxHighlight(t *testing.T) {
 	r := ioutil.NopCloser(strings.NewReader(`
 <pre><code>
 package main
@@ -76,7 +76,7 @@ this is not even a lang
 </code></pre>
 	`))
 
-	r = Code(r)
+	r = SyntaxHighlight(r)
 	got, _ := ioutil.ReadAll(r)
 	expect, _ := ioutil.ReadFile("testdata/code.html")
 	if string(got) != string(expect) {
